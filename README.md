@@ -16,6 +16,27 @@ https://docs.gatling.io/
 ## How to run the simulation(s)?
 `> mvn gatling:test`
 
+## Vaadin authentication simulation (Java)
+`VaadinAuthSimulation` is prepared for Vaadin/Spring Security style login against `https://localhost:8080`.
+
+### User feeder
+Create/update users in:
+`src/test/resources/data/users.csv`
+
+### Run VaadinAuthSimulation
+```bash
+mvn gatling:test \
+  -Dgatling.simulationClass=com.github.avec112.VaadinAuthSimulation \
+  -DbaseUrl=https://localhost:8080 \
+  -Dusers=20 \
+  -DrampSeconds=30 \
+  -DloginPagePath=/login \
+  -DloginPostPath=/login \
+  -DprotectedPath=/
+```
+
+If your Vaadin app uses a self-signed TLS cert, add that certificate to your JVM trust store before running.
+
 ## Requirements
 - Java 21+
 - Maven 3.9+
