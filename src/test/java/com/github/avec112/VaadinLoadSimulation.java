@@ -8,13 +8,12 @@ import java.time.Duration;
 import static io.gatling.javaapi.core.CoreDsl.*;
 import static io.gatling.javaapi.http.HttpDsl.*;
 
-public class VaadinAuthSimulation extends Simulation {
+public class VaadinLoadSimulation extends Simulation {
     private static final String BASE_URL = System.getProperty("baseUrl", "http://localhost:8080");
     private static final String LOGIN_PAGE_PATH = System.getProperty("loginPagePath", "/login");
     private static final String LOGIN_POST_PATH = System.getProperty("loginPostPath", "/login");
-    private static final String PROTECTED_PATH = System.getProperty("protectedPath", "/");
 
-    private static final int USERS = Integer.parseInt(System.getProperty("users", "2"));
+    private static final int USERS = Integer.parseInt(System.getProperty("users", "10")); // TODO Adjust number
     private static final int RAMP_SECONDS = Integer.parseInt(System.getProperty("rampSeconds", "30"));
 
     HttpProtocolBuilder httpProtocol =
@@ -23,7 +22,7 @@ public class VaadinAuthSimulation extends Simulation {
                     .userAgentHeader("Mozilla/5.0 (X11; Linux x86_64) Gatling/Java");
 
     ScenarioBuilder loginScenario =
-            scenario("Vaadin Authentication Scenario")
+            scenario("Vaadin Load Scenario")
                     .feed(csv("data/users.csv").circular())
                     .exec(
                             http("GET login page")
@@ -44,11 +43,36 @@ public class VaadinAuthSimulation extends Simulation {
                                     .check(status().is(302))
                     )
                     .exec(
-                            http("Follow redirect")
-                                    .get(PROTECTED_PATH)
+                            http("GET landingpage")
+                                    .get("/")
                                     .check(status().is(200))
-//                                    .check(regex("Hello World").exists())
-                    );
+                    )
+                    .pause(1, 3)
+                    .exec(
+                            http("GET feed view")
+                                    .get("/feed")
+                                    .check(status().is(200))
+                    )
+                    .pause(1, 3)
+                    .exec(
+                            http("GET master-detail view")
+                                    .get("/master-detail")
+                                    .check(status().is(200))
+                    )
+                    .pause(1, 3)
+                    .exec(
+                            http("GET image-gallery view")
+                                    .get("/image-gallery")
+                                    .check(status().is(200))
+                    )
+                    .pause(1, 3)
+                    .exec(
+                            http("GET checkout-form view")
+                                    .get("/checkout-form")
+                                    .check(status().is(200))
+                    )
+
+            ;
 
     {
         setUp(loginScenario.injectOpen(rampUsers(USERS).during(Duration.ofSeconds(RAMP_SECONDS))))
