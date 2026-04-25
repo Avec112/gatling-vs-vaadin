@@ -27,7 +27,7 @@ Create/update users in:
 ```bash
 mvn gatling:test \
   -Dgatling.simulationClass=com.github.avec112.VaadinLoadSimulation \
-  -DbaseUrl=https://localhost:8080 \
+  -DbaseUrl=http://localhost:8080 \
   -Dusers=20 \
   -DrampSeconds=30 \
   -DloginPagePath=/login \
